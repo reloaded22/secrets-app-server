@@ -1,0 +1,38 @@
+<header class="py-3 bg-dark text-white">
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="/api" class="text-white text-decoration-none col-3 col-lg-2">
+      <i class="fas fa-key fa-2x ms-3"></i>
+    </a>
+
+    <ul class="nav">
+      <li><a href="/api" class="nav-link px-2 text-white">Home</a></li>
+      <li><a href="/api/secrets" class="nav-link px-2 text-white">Secrets</a></li>
+      <li><a href="/api/about" class="nav-link px-2 text-white">About</a></li>
+    </ul>
+    
+    <div class="col-3 col-lg-2 text-center">
+      <% if (!loggedIn) {%>
+        <!-- If the user is NOT logged in -->
+        <!-- <div class="border"> -->
+          <a class="btn btn-outline-light btn-sm w-75" href="/api/login" role="button">Login</a>
+          <a class="btn btn-warning btn-sm mt-1 w-75" href="/api/register" role="button">Sign-up</a>
+        <!-- </div> -->
+      <%} else {%>
+      <!-- If the user IS logged in -->
+      <div class="dropdown">
+        <a href="#" class="d-block text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown">
+          <img src="https://cdn2.iconfinder.com/data/icons/font-awesome/1792/user-secret-512.png" alt="mdo" width="40" height="40" class="rounded-circle bg-white">
+        </a>
+        <ul class="dropdown-menu text-small" >
+          <li><a class="dropdown-item" href="/api/submit">New secret...</a></li>
+          <li><a class="dropdown-item" href="/api/my-secrets">My Secrets</a></li>
+          <li><a class="dropdown-item" href="/api/my-profile">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="/api/logout">Sign out</a></li>
+        </ul>
+      </div>
+      <%}%>
+    </div>
+
+  </div>
+</header>

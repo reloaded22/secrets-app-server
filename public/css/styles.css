@@ -1,0 +1,77 @@
+body {
+  position: relative;
+  /* min-height: calc(100vh - 48px); */
+  min-height: 100vh;
+  background-color: #E8ECEF;
+}
+
+.page-content {
+  padding-bottom: 80px;
+}
+
+.card {
+  min-height: 150px;
+}
+
+.contract {
+  max-height: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+.card-title {
+  width:90%;
+}
+
+.delete {
+  position: absolute;
+  top: 3px;
+  left: 25%;
+  /* margin: 5px; */
+  visibility: hidden;
+}
+
+.edit {
+  position: absolute;
+  top: 3px;
+  right: 25%;
+ /*  margin: 5px; */
+  visibility: hidden;
+}
+
+.card:hover .delete, .card:hover .edit  {
+  visibility: visible;
+}
+
+.card:hover > .my-cards {
+  margin-top: 40px;
+  background-color: black;
+  border-radius: 5px;
+}
+
+.card:hover > .all-cards {
+  background-color: black;
+  border-radius: 5px;
+}
+
+.text-color-1 {
+  color: aqua;
+}
+
+.text-color-2 {
+  color: deeppink;
+}
+
+.about-text {
+  text-align: justify;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 30px;
+}
