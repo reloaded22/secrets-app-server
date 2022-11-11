@@ -50,6 +50,7 @@ const authenticateMongoUser = (req, res) => {
                 } else {
                     console.log("Successfully authenticated\n");
                     res.json({
+                      user: user,
                       loggedIn: req.isAuthenticated(),
                       loginError: "",
                     });
@@ -58,6 +59,7 @@ const authenticateMongoUser = (req, res) => {
         } else {
             //console.log(options.message);
             res.json({
+              user: {},
               loggedIn: req.isAuthenticated(),
               loginError: options.message,
             });
@@ -110,8 +112,8 @@ const addMongoSecret = (req, res) => {
 };
 
 const deleteMongoSecret = (req, res) => {
+  const index = req.body.index;
   if (req.isAuthenticated()) {
-    const index = req.body.index;
     const oldSecret = req.user.secrets[index];
     console.log(`Secret to be deleted: ${oldSecret}\n`);
     User.updateOne(
@@ -127,7 +129,11 @@ const deleteMongoSecret = (req, res) => {
       }
     );
   } else {
-    res.redirect("/login");
+    console.log("User needs to login to see the requested page\n");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
   };
 };
 

@@ -24,7 +24,7 @@ app.use(passport.session());
 const router = express.Router();
 app.use("/api", router);
 
-router.get("/",(req,res)=>{
+router.get("/home",(req,res)=>{
     readSecretsMongo(req, res);
 }); 
 //////////////////////////////////////
@@ -92,32 +92,21 @@ router.post("/submit",(req,res)=>{
   addMongoSecret(req, res);
 }); 
 //////////////////////////////////////
-router.get("/my-secrets", (req,res) => {
-  if (req.isAuthenticated()) {  
-    res.render("my-secrets", {
-      secrets: req.user.secrets,
-      loggedIn: req.isAuthenticated(),
-    });
-  } else {
-    res.redirect("/login");
-  }
-});
+// router.get("/my-secrets", (req,res) => {
+//   if (req.isAuthenticated()) {  
+//     res.render("my-secrets", {
+//       secrets: req.user.secrets,
+//       loggedIn: req.isAuthenticated(),
+//     });
+//   } else {
+//     res.redirect("/login");
+//   }
+// });
 //////////////////////////////////////
 router.get("/admin-panel", (req,res) => {
 
   if (req.isAuthenticated()) {  
       readSecretsMongo(req, res, "admin-panel");
-  } else {
-    res.redirect("/login");
-  }
-});
-//////////////////////////////////////
-router.get("/my-profile", (req,res) => {
-  if (req.isAuthenticated()) {  
-    res.render("my-profile", {
-      email: req.user.username,
-      loggedIn: req.isAuthenticated(),
-    });
   } else {
     res.redirect("/login");
   }
@@ -130,14 +119,17 @@ router.post("/delete", (req, res) => {
 router.post("/edit-secret", (req, res)=>{
   const index = req.body.index;
   if (req.isAuthenticated()) {
-    res.render("edit-secret", {
+    res.json({
       loggedIn: req.isAuthenticated(),
       index: index,
       secret: req.user.secrets[index],
     });
   } else {
     console.log("User needs to login to see the requested page\n");
-    res.redirect("/login");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
   };
 });
 //////////////////////////////////////
