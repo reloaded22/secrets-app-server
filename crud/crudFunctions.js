@@ -29,12 +29,19 @@ passport.deserializeUser(User.deserializeUser());
 // FUNCTIONS //
 /////////////////////////////////////////////////////////////////////
 const readSecretsMongo = (req, res) => {
+  console.log(
+    `Is some user currently authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`
+  );
   User.find((err, users) => {
     if (err) {
       console.log(err);
     } else {
       if (users) {
-        res.json(users);
+        res.json({
+          users,
+          user: req.isAuthenticated() ? req.user : {},
+          loggedIn: req.isAuthenticated(),
+        });
       };
     };
   });
@@ -42,7 +49,7 @@ const readSecretsMongo = (req, res) => {
 
 const authenticateMongoUser = (req, res) => {
     passport.authenticate("local", (err, user, options) => {
-        console.log(req.body);
+        //console.log(req.body);
         if (user) {
             req.login(user, (error) => {
                 if (error) {
@@ -114,17 +121,20 @@ const addMongoSecret = (req, res) => {
 const deleteMongoSecret = (req, res) => {
   const index = req.body.index;
   if (req.isAuthenticated()) {
-    const oldSecret = req.user.secrets[index];
-    console.log(`Secret to be deleted: ${oldSecret}\n`);
+    const secret = req.user.secrets[index];
     User.updateOne(
       { _id: req.user._id },
-      { $pull: { secrets: oldSecret } },
+      { $pull: { secrets: secret } },
       (err) => {
         if (err) {
-          console.log(err);
+          console.error(err);
         } else {
           console.log("Secret deleted successfully\n");
-          res.redirect("/my-secrets");
+          res.json({
+            loggedIn: req.isAuthenticated(),
+            index,
+            secret,
+          });
         };
       }
     );
