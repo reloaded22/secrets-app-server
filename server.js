@@ -92,32 +92,13 @@ router.post("/submit",(req,res)=>{
   addMongoSecret(req, res);
 }); 
 //////////////////////////////////////
-// router.get("/my-secrets", (req,res) => {
-//   if (req.isAuthenticated()) {  
-//     res.render("my-secrets", {
-//       secrets: req.user.secrets,
-//       loggedIn: req.isAuthenticated(),
-//     });
-//   } else {
-//     res.redirect("/login");
-//   }
-// });
-//////////////////////////////////////
-router.get("/admin-panel", (req,res) => {
-
-  if (req.isAuthenticated()) {  
-      readSecretsMongo(req, res, "admin-panel");
-  } else {
-    res.redirect("/login");
-  }
-});
-//////////////////////////////////////
 router.post("/delete", (req, res) => {
   deleteMongoSecret(req, res);
 });
 //////////////////////////////////////
 router.post("/edit-secret", (req, res)=>{
   const index = req.body.index;
+  console.log(index);
   if (req.isAuthenticated()) {
     res.json({
       loggedIn: req.isAuthenticated(),
@@ -137,6 +118,14 @@ router.post("/submit-update", (req, res)=> {
   updateMongoSecret(req, res);
 });
 //////////////////////////////////////
+router.get("/admin-panel", (req,res) => {
+
+  if (req.isAuthenticated()) {  
+      readSecretsMongo(req, res, "admin-panel");
+  } else {
+    res.redirect("/login");
+  }
+});
 
 // Server Connection //
 const PORT = process.env.PORT;

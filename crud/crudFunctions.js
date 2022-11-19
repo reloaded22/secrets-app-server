@@ -159,7 +159,9 @@ const updateMongoSecret = (req, res) => {
             console.log(err);
             } else {
             console.log("Secret updated successfully\n");
-            res.redirect("/my-secrets");
+            res.json({
+              message: "Secret updated successfully"
+            })
             };
         }
     );
