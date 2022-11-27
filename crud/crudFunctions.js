@@ -112,7 +112,7 @@ const addMongoSecret = (req, res) => {
                 console.log(err);
             } else {
                 console.log("Secret saved successfully\n");
-                res.redirect("/my-secrets");
+                res.redirect("/api/my-secrets");
             };
         }
     ); 
@@ -157,9 +157,14 @@ const updateMongoSecret = (req, res) => {
         (err) => {
             if (err) {
             console.log(err);
+            res.json({
+              redirect: `/api/edit-secret/${index}`,
+              message: err.message
+            })
             } else {
             console.log("Secret updated successfully\n");
             res.json({
+              redirect: `/api/my-secrets`,
               message: "Secret updated successfully"
             })
             };
