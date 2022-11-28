@@ -92,26 +92,9 @@ router.post("/submit",(req,res)=>{
   addMongoSecret(req, res);
 }); 
 //////////////////////////////////////
-router.post("/delete", (req, res) => {
+// I can make this request either with GET or POST
+router.get("/delete/:index", (req, res) => {
   deleteMongoSecret(req, res);
-});
-//////////////////////////////////////
-router.post("/edit-secret", (req, res)=>{
-  const index = req.body.index;
-  console.log(index);
-  if (req.isAuthenticated()) {
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-      secret: req.user.secrets[index],
-    });
-  } else {
-    console.log("User needs to login to see the requested page\n");
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-    });
-  };
 });
 //////////////////////////////////////
 router.post("/submit-update", (req, res)=> {
@@ -133,3 +116,48 @@ const PORT = process.env.PORT;
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT} 🚀\n`);
 });
+
+
+///////////////////////////////////////////////////////////
+// NOTES & BACKUPS:
+
+//////////////////////////////////////
+// I don't need to make requests to "/edit-secret/:index"
+
+/* router.get("/edit-secret/:index", (req, res) => {
+  console.log("GET REQUEST TO /edit-secret/:index");
+  const index = req.params.index;
+  console.log(index);
+  if (req.isAuthenticated()) {
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+      secret: req.user.secrets[index],
+    });
+  } else {
+    console.log("User needs to login to see the requested page\n");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
+  }
+});
+
+router.post("/edit-secret/:index", (req, res)=>{
+  console.log("POST REQUEST TO /edit-secret/:index");
+  const index = req.params.index;
+  console.log(index);
+  if (req.isAuthenticated()) {
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+      secret: req.user.secrets[index],
+    });
+  } else {
+    console.log("User needs to login to see the requested page\n");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
+  };
+}); */

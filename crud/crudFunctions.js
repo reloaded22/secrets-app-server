@@ -30,7 +30,7 @@ passport.deserializeUser(User.deserializeUser());
 /////////////////////////////////////////////////////////////////////
 const readSecretsMongo = (req, res) => {
   console.log(
-    `Is some user currently authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`
+    `Authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`
   );
   User.find((err, users) => {
     if (err) {
@@ -119,7 +119,8 @@ const addMongoSecret = (req, res) => {
 };
 
 const deleteMongoSecret = (req, res) => {
-  const index = req.body.index;
+  // const index = req.body.index;
+  const index = req.params.index;
   if (req.isAuthenticated()) {
     const secret = req.user.secrets[index];
     User.updateOne(
