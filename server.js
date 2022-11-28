@@ -73,14 +73,14 @@ router.get("/logout",(req,res)=>{
   });
 }); 
 //////////////////////////////////////
-router.get("/submit",(req,res)=>{
+/* router.get("/submit",(req,res)=>{
   if (req.isAuthenticated()) {
     res.render("submit", { loggedIn: req.isAuthenticated() });
   } else {
     console.log("User needs to login to see the requested page\n");
     res.redirect("/login");
   };
-});
+}); */
 
 router.post("/submit",(req,res)=>{
   addMongoSecret(req, res);

@@ -112,8 +112,11 @@ const addMongoSecret = (req, res) => {
             if (err) {
                 console.log(err);
             } else {
-                console.log("Secret saved successfully\n");
-                res.redirect("/api/my-secrets");
+              console.log("Secret saved successfully\n");
+              // res.redirect is relative to the front-end (client)
+              // res.redirect("/app/my-secrets"); => Only works with <form method:"POST">
+              // For axios, the redirection must be made inside the then callback
+              res.json({ redirect: "/app/my-secrets" });
             };
         }
     ); 
@@ -159,13 +162,11 @@ const updateMongoSecret = (req, res) => {
             if (err) {
             console.log(err);
             res.json({
-              redirect: `/api/edit-secret/${index}`,
               message: err.message
             })
             } else {
             console.log("Secret updated successfully\n");
             res.json({
-              redirect: `/api/my-secrets`,
               message: "Secret updated successfully"
             })
             };
