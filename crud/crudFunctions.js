@@ -76,26 +76,27 @@ const authenticateMongoUser = (req, res) => {
 
 const registerMongoUser = (req, res) => {
   console.log(req.body);
+
   const user = {
     username: req.body.username,
     alias: req.body.alias
   };
+  const password = req.body.password;
+
   User.register(
     user,
-    req.body.password,
+    password,
     (err) => {
+      let regError = "";
       if (!err) {
         console.log("New user saved successfully\n");
-        passport.authenticate("local")(req, res, () => {
-          res.redirect("/secrets");
-        });
+        res.json({ regError: null });
       } else {
         console.log(err.message);
-        let regError = "";
         err.message.search("key") != -1
           ? (regError = "Alias already taken, please choose a different one")
           : (regError = "Email already registered");
-          res.render("register", {regError});
+          res.json({ regError });
       };
     }
   );
@@ -119,7 +120,6 @@ const addMongoSecret = (req, res) => {
 };
 
 const deleteMongoSecret = (req, res) => {
-  // const index = req.body.index;
   const index = req.params.index;
   if (req.isAuthenticated()) {
     const secret = req.user.secrets[index];

@@ -51,12 +51,6 @@ router.get("/secrets",(req,res)=>{
   readSecretsMongo(req, res, "secrets");
 }); 
 //////////////////////////////////////
-router.get("/register",(req, res) => {
-  res.render("register", {
-    regError: "",
-  });
-});
-
 router.post("/register",(req,res)=>{
   registerMongoUser(req, res);
 }); 
