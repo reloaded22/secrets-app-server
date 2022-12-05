@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import { readMongoSecrets, authenticateMongoUser, registerMongoUser, addMongoSecret, updateMongoSecret, deleteMongoSecret } from "./crud/crudFunctions.js";
+import { readMongoSecrets, authenticateMongoUser, registerMongoUser, addMongoSecret, updateMongoSecret, deleteMongoSecret, adminUpdate, adminDelete } from "./crud/crudFunctions.js";
 
 const app = express();
 app.use(express.json());
@@ -81,18 +81,18 @@ router.get("/delete/:index", (req, res) => {
   deleteMongoSecret(req, res);
 });
 //////////////////////////////////////
+router.get("/admin-delete/:index", (req, res) => {
+  adminDelete(req, res);
+});
+//////////////////////////////////////
 router.post("/submit-update", (req, res)=> {
   updateMongoSecret(req, res);
 });
 //////////////////////////////////////
-router.get("/admin-panel", (req,res) => {
-
-  if (req.isAuthenticated()) {  
-      readMongoSecrets(req, res, "admin-panel");
-  } else {
-    res.redirect("/login");
-  }
+router.post("/admin-update", (req, res)=> {
+  adminUpdate(req, res);
 });
+//////////////////////////////////////
 
 // SERVER CONNECTION //
 const PORT = process.env.PORT;

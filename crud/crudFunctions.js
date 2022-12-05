@@ -3,6 +3,7 @@ import passport from "passport";
 import passportLocalMongoose from "passport-local-mongoose";
 import mongoDbConnection from "../config/mongoDbConnection.js";
 import dotenv from "dotenv";
+import url from "url";
 
 // Initialize dotenv //
 dotenv.config();
@@ -140,6 +141,29 @@ const updateMongoSecret = (req, res) => {
     );
 };
 
+const adminUpdate = (req, res) => {
+  const { user, secret, index } = req.body;
+  const secrets = user.secrets;
+  const oldSecret = secrets[index];
+  User.updateOne(
+    { _id: user._id, secrets: oldSecret },
+    { $set: { "secrets.$": secret } },
+    (err) => {
+      if (err) {
+        console.log(err);
+        res.json({
+          message: err.message,
+        });
+      } else {
+        console.log("Secret updated successfully\n");
+        res.json({
+          message: "Secret updated successfully",
+        });
+      }
+    }
+  );
+};
+
 const deleteMongoSecret = (req, res) => {
   const index = req.params.index;
   if (req.isAuthenticated()) {
@@ -169,6 +193,67 @@ const deleteMongoSecret = (req, res) => {
   }
 };
 
+const adminDelete = (req, res) => {
+  const index = req.params.index;
+  const {userid} = url.parse(req.url, true).query;
+  console.log("userid:");
+  console.log(userid);
+  if (req.isAuthenticated()) {
+    User.findOne(
+      { _id: userid }
+    )
+      .then((user) => {
+        console.log(user);
+        const secret = user.secrets[index];
+        console.log(secret);
+        User.updateOne(
+          { _id: userid }, 
+          { $pull: { secrets: secret } },
+          (err) => {
+            if (!err) {
+              console.log("Secret deleted successfully\n");
+              res.status(200).json({ message: "Success" });
+            } else {
+              console.error(err);
+              res.status(500).json({ error: err });
+            };
+          }
+          );
+      })
+      // .then(() => {
+      //   console.log("Secret deleted successfully\n");
+      //   res.send();
+      // })
+      // .catch((err) => {
+      //   res.status(500).json({ error: err });
+      // });
+
+    // const secret = req.user.secrets[index];
+    // User.updateOne(
+    //   { _id: req.user._id },
+    //   { $pull: { secrets: secret } },
+    //   (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //     } else {
+    //       console.log("Secret deleted successfully\n");
+    //       res.json({
+    //         loggedIn: req.isAuthenticated(),
+    //         index,
+    //         secret,
+    //       });
+    //     }
+    //   }
+    // );
+  } else {
+    console.log("User needs to login to see the requested page\n");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
+  }
+};
+
 export {
   registerMongoUser,
   authenticateMongoUser,
@@ -176,4 +261,6 @@ export {
   addMongoSecret,
   updateMongoSecret,
   deleteMongoSecret,
+  adminUpdate,
+  adminDelete,
 };
