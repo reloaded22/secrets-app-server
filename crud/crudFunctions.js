@@ -28,22 +28,28 @@ passport.deserializeUser(User.deserializeUser());
 
 // FUNCTIONS //
 /////////////////////////////////////////////////////////////////////
-const readSecretsMongo = (req, res) => {
-  console.log(
-    `Authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`
-  );
-  User.find((err, users) => {
-    if (err) {
-      console.log(err);
+
+const registerMongoUser = (req, res) => {
+  console.log(req.body);
+
+  const user = {
+    username: req.body.username,
+    alias: req.body.alias,
+  };
+  const password = req.body.password;
+
+  User.register(user, password, (err) => {
+    let regError = "";
+    if (!err) {
+      console.log("New user saved successfully\n");
+      res.json({ regError: null });
     } else {
-      if (users) {
-        res.json({
-          users,
-          user: req.isAuthenticated() ? req.user : {},
-          loggedIn: req.isAuthenticated(),
-        });
-      };
-    };
+      console.log(err.message);
+      err.message.search("key") != -1
+        ? (regError = "Alias already taken, please choose a different one")
+        : (regError = "Email already registered");
+      res.json({ regError });
+    }
   });
 };
 
@@ -74,35 +80,22 @@ const authenticateMongoUser = (req, res) => {
     })(req, res);
 };
 
-const registerMongoUser = (req, res) => {
-  console.log(req.body);
-
-  const user = {
-    username: req.body.username,
-    alias: req.body.alias
-  };
-  const password = req.body.password;
-
-  User.register(
-    user,
-    password,
-    (err) => {
-      let regError = "";
-      if (!err) {
-        console.log("New user saved successfully\n");
-        res.json({ regError: null });
-      } else {
-        console.log(err.message);
-        err.message.search("key") != -1
-          ? (regError = "Alias already taken, please choose a different one")
-          : (regError = "Email already registered");
-          res.json({ regError });
-      };
+const readMongoSecrets = (req, res) => {
+  console.log(`Authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`);
+  User.find((err, users) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (users) {
+        res.json({
+          users,
+          user: req.isAuthenticated() ? req.user : {},
+          loggedIn: req.isAuthenticated(),
+        });
+      }
     }
-  );
+  });
 };
-
-/////////////////////////////////////////////////////////////////////
 
 const addMongoSecret = (req, res) => {
     User.updateOne(
@@ -115,42 +108,15 @@ const addMongoSecret = (req, res) => {
               console.log("Secret saved successfully\n");
               // res.redirect is relative to the front-end (client)
               // res.redirect("/app/my-secrets"); => Only works with <form method:"POST">
-              // For axios, the redirection must be made inside the then callback
+              // For axios, the redirection must be made inside the then() callback
+              // So now I can just:
+              //res.send()
+              // Or send some info like a redirection path
               res.json({ redirect: "/app/my-secrets" });
             };
         }
     ); 
 };
-
-const deleteMongoSecret = (req, res) => {
-  const index = req.params.index;
-  if (req.isAuthenticated()) {
-    const secret = req.user.secrets[index];
-    User.updateOne(
-      { _id: req.user._id },
-      { $pull: { secrets: secret } },
-      (err) => {
-        if (err) {
-          console.error(err);
-        } else {
-          console.log("Secret deleted successfully\n");
-          res.json({
-            loggedIn: req.isAuthenticated(),
-            index,
-            secret,
-          });
-        };
-      }
-    );
-  } else {
-    console.log("User needs to login to see the requested page\n");
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-    });
-  };
-};
-
 
 const updateMongoSecret = (req, res) => {
     const { index, secret } = req.body;
@@ -174,10 +140,39 @@ const updateMongoSecret = (req, res) => {
     );
 };
 
+const deleteMongoSecret = (req, res) => {
+  const index = req.params.index;
+  if (req.isAuthenticated()) {
+    const secret = req.user.secrets[index];
+    User.updateOne(
+      { _id: req.user._id },
+      { $pull: { secrets: secret } },
+      (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log("Secret deleted successfully\n");
+          res.json({
+            loggedIn: req.isAuthenticated(),
+            index,
+            secret,
+          });
+        }
+      }
+    );
+  } else {
+    console.log("User needs to login to see the requested page\n");
+    res.json({
+      loggedIn: req.isAuthenticated(),
+      index: index,
+    });
+  }
+};
+
 export {
-  readSecretsMongo,
-  authenticateMongoUser,
   registerMongoUser,
+  authenticateMongoUser,
+  readMongoSecrets,
   addMongoSecret,
   updateMongoSecret,
   deleteMongoSecret,

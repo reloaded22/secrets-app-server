@@ -1,13 +1,12 @@
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import { readSecretsMongo, authenticateMongoUser, registerMongoUser, addMongoSecret, updateMongoSecret, deleteMongoSecret } from "./crud/crudFunctions.js";
+import { readMongoSecrets, authenticateMongoUser, registerMongoUser, addMongoSecret, updateMongoSecret, deleteMongoSecret } from "./crud/crudFunctions.js";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.set("view engine", "ejs");
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 // Use the express-session module ////
 app.use(session({
@@ -25,7 +24,7 @@ const router = express.Router();
 app.use("/api", router);
 
 router.get("/home",(req,res)=>{
-    readSecretsMongo(req, res);
+    readMongoSecrets(req, res);
 }); 
 //////////////////////////////////////
 router.get("/about", (req, res) => {
@@ -48,7 +47,7 @@ router.post("/login", (req, res) => {
 });
 //////////////////////////////////////
 router.get("/secrets",(req,res)=>{
-  readSecretsMongo(req, res, "secrets");
+  readMongoSecrets(req, res, "secrets");
 }); 
 //////////////////////////////////////
 router.post("/register",(req,res)=>{
@@ -73,15 +72,6 @@ router.get("/logout",(req,res)=>{
   });
 }); 
 //////////////////////////////////////
-/* router.get("/submit",(req,res)=>{
-  if (req.isAuthenticated()) {
-    res.render("submit", { loggedIn: req.isAuthenticated() });
-  } else {
-    console.log("User needs to login to see the requested page\n");
-    res.redirect("/login");
-  };
-}); */
-
 router.post("/submit",(req,res)=>{
   addMongoSecret(req, res);
 }); 
@@ -98,13 +88,13 @@ router.post("/submit-update", (req, res)=> {
 router.get("/admin-panel", (req,res) => {
 
   if (req.isAuthenticated()) {  
-      readSecretsMongo(req, res, "admin-panel");
+      readMongoSecrets(req, res, "admin-panel");
   } else {
     res.redirect("/login");
   }
 });
 
-// Server Connection //
+// SERVER CONNECTION //
 const PORT = process.env.PORT;
 
 app.listen(PORT, ()=>{

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import passportLocalMongoose from "passport-local-mongoose";
 
 // Create the schema for the model //
 const userSchema = new mongoose.Schema({
