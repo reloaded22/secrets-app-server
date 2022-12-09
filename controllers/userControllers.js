@@ -1,36 +1,12 @@
-import mongoose from "mongoose";
+
 import passport from "passport";
-import passportLocalMongoose from "passport-local-mongoose";
-import mongoDbConnection from "../config/mongoDbConnection.js";
-import dotenv from "dotenv";
+import User from "../models/User.js";
 import url from "url";
-
-// Initialize dotenv //
-dotenv.config();
-
-// MongoDB Atlas Connection //
-mongoDbConnection();
-
-// Create the schema for the model //
-const userSchema = new mongoose.Schema({
-  alias: { type: String, required: true, unique: true },
-  username: { type: String, required: true, unique: true },
-  isAdmin: { type: Boolean, required: true, default: false },
-  secrets: [],
-});
-// Inject the passport-local-mongoose module to the schema //
-userSchema.plugin(passportLocalMongoose);
-// Create the model //
-const User = new mongoose.model("User", userSchema);
-// Use the passport module //
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 // FUNCTIONS //
 /////////////////////////////////////////////////////////////////////
 
-const registerMongoUser = (req, res) => {
+const registerUser = (req, res) => {
   console.log(req.body);
 
   const user = {
@@ -54,9 +30,8 @@ const registerMongoUser = (req, res) => {
   });
 };
 
-const authenticateMongoUser = (req, res) => {
+const authenticateUser = (req, res) => {
     passport.authenticate("local", (err, user, options) => {
-        //console.log(req.body);
         if (user) {
             req.login(user, (error) => {
                 if (error) {
@@ -71,7 +46,6 @@ const authenticateMongoUser = (req, res) => {
                 };
             });
         } else {
-            //console.log(options.message);
             res.json({
               user: {},
               loggedIn: req.isAuthenticated(),
@@ -81,8 +55,26 @@ const authenticateMongoUser = (req, res) => {
     })(req, res);
 };
 
-const readMongoSecrets = (req, res) => {
-  console.log(`Authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`);
+const logOut = (req, res) => {
+  req.logOut((err) => {
+    if (!err) {
+      console.log("Successfully logged out\n");
+      res.json({
+        loggedIn: req.isAuthenticated(),
+        loginError: "",
+      });
+    } else {
+      console.log(err);
+      res.json({
+        loggedIn: req.isAuthenticated(),
+        loginError: err,
+      });
+    }
+  });
+};
+
+const readSecrets = (req, res) => {
+  //console.log(`Authenticated?: ${req.isAuthenticated() ? "YES" : "NO"}`);
   User.find((err, users) => {
     if (err) {
       console.log(err);
@@ -98,7 +90,7 @@ const readMongoSecrets = (req, res) => {
   });
 };
 
-const addMongoSecret = (req, res) => {
+const addSecret = (req, res) => {
     User.updateOne(
         { _id: req.user._id },
         { $push: { secrets: req.body.secret } },
@@ -107,19 +99,13 @@ const addMongoSecret = (req, res) => {
                 console.log(err);
             } else {
               console.log("Secret saved successfully\n");
-              // res.redirect is relative to the front-end (client)
-              // res.redirect("/app/my-secrets"); => Only works with <form method:"POST">
-              // For axios, the redirection must be made inside the then() callback
-              // So now I can just:
-              //res.send()
-              // Or send some info like a redirection path
               res.json({ redirect: "/app/my-secrets" });
             };
         }
     ); 
 };
 
-const updateMongoSecret = (req, res) => {
+const updateSecret = (req, res) => {
     const { index, secret } = req.body;
     const oldSecret = req.user.secrets[index];
         User.updateOne(
@@ -164,7 +150,7 @@ const adminUpdate = (req, res) => {
   );
 };
 
-const deleteMongoSecret = (req, res) => {
+const deleteSecret = (req, res) => {
   const index = req.params.index;
   if (req.isAuthenticated()) {
     const secret = req.user.secrets[index];
@@ -220,31 +206,6 @@ const adminDelete = (req, res) => {
           }
           );
       })
-      // .then(() => {
-      //   console.log("Secret deleted successfully\n");
-      //   res.send();
-      // })
-      // .catch((err) => {
-      //   res.status(500).json({ error: err });
-      // });
-
-    // const secret = req.user.secrets[index];
-    // User.updateOne(
-    //   { _id: req.user._id },
-    //   { $pull: { secrets: secret } },
-    //   (err) => {
-    //     if (err) {
-    //       console.error(err);
-    //     } else {
-    //       console.log("Secret deleted successfully\n");
-    //       res.json({
-    //         loggedIn: req.isAuthenticated(),
-    //         index,
-    //         secret,
-    //       });
-    //     }
-    //   }
-    // );
   } else {
     console.log("User needs to login to see the requested page\n");
     res.json({
@@ -255,12 +216,13 @@ const adminDelete = (req, res) => {
 };
 
 export {
-  registerMongoUser,
-  authenticateMongoUser,
-  readMongoSecrets,
-  addMongoSecret,
-  updateMongoSecret,
-  deleteMongoSecret,
+  registerUser,
+  authenticateUser,
+  logOut,
+  readSecrets,
+  addSecret,
+  updateSecret,
+  deleteSecret,
   adminUpdate,
   adminDelete,
 };

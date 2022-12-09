@@ -1,12 +1,19 @@
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import { readMongoSecrets, authenticateMongoUser, registerMongoUser, addMongoSecret, updateMongoSecret, deleteMongoSecret, adminUpdate, adminDelete } from "./crud/crudFunctions.js";
+import DbConnection from "./config/mongoDbConnection.js";
+import { router as userRoutes } from "./routes/userRoutes.js";
+import dotenv from "dotenv";
+
+// Initialize dotenv //
+dotenv.config();
+
+// MongoDB Atlas Connection //
+DbConnection();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.static("public"));
 
 // Use the express-session module ////
 app.use(session({
@@ -19,80 +26,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 //////////////////////////////////////
 
-// ROUTES ////////////////////////////
-const router = express.Router();
-app.use("/api", router);
-
-router.get("/home",(req,res)=>{
-    readMongoSecrets(req, res);
-}); 
-//////////////////////////////////////
-router.get("/about", (req, res) => {
-  res.render("about", {
-    loggedIn: req.isAuthenticated(),
-  });
-}); 
-//////////////////////////////////////
-router.get("/login",(req, res) => {
-  console.log("GET REQUEST TO LOGIN");
-  console.log(req.isAuthenticated());
-  res.json({
-    loggedIn: req.isAuthenticated(),
-    loginError: "",
-  });
-});
-
-router.post("/login", (req, res) => {
-  authenticateMongoUser(req, res);
-});
-//////////////////////////////////////
-router.get("/secrets",(req,res)=>{
-  readMongoSecrets(req, res, "secrets");
-}); 
-//////////////////////////////////////
-router.post("/register",(req,res)=>{
-  registerMongoUser(req, res);
-}); 
-//////////////////////////////////////
-router.get("/logout",(req,res)=>{
-  req.logOut((err)=>{
-    if (!err) {
-      console.log("Successfully logged out\n");
-      res.json({
-        loggedIn: req.isAuthenticated(),
-        loginError: "",
-      });
-    } else {
-      console.log(err);
-      res.json({
-        loggedIn: req.isAuthenticated(),
-        loginError: err,
-      });
-    };
-  });
-}); 
-//////////////////////////////////////
-router.post("/submit",(req,res)=>{
-  addMongoSecret(req, res);
-}); 
-//////////////////////////////////////
-// I can make this request either with GET or POST
-router.get("/delete/:index", (req, res) => {
-  deleteMongoSecret(req, res);
-});
-//////////////////////////////////////
-router.get("/admin-delete/:index", (req, res) => {
-  adminDelete(req, res);
-});
-//////////////////////////////////////
-router.post("/submit-update", (req, res)=> {
-  updateMongoSecret(req, res);
-});
-//////////////////////////////////////
-router.post("/admin-update", (req, res)=> {
-  adminUpdate(req, res);
-});
-//////////////////////////////////////
+// Use the routes //
+app.use("/api", userRoutes);
 
 // SERVER CONNECTION //
 const PORT = process.env.PORT;
@@ -100,48 +35,3 @@ const PORT = process.env.PORT;
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT} 🚀\n`);
 });
-
-
-///////////////////////////////////////////////////////////
-// NOTES & BACKUPS:
-
-//////////////////////////////////////
-// I don't need to make requests to "/edit-secret/:index"
-
-/* router.get("/edit-secret/:index", (req, res) => {
-  console.log("GET REQUEST TO /edit-secret/:index");
-  const index = req.params.index;
-  console.log(index);
-  if (req.isAuthenticated()) {
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-      secret: req.user.secrets[index],
-    });
-  } else {
-    console.log("User needs to login to see the requested page\n");
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-    });
-  }
-});
-
-router.post("/edit-secret/:index", (req, res)=>{
-  console.log("POST REQUEST TO /edit-secret/:index");
-  const index = req.params.index;
-  console.log(index);
-  if (req.isAuthenticated()) {
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-      secret: req.user.secrets[index],
-    });
-  } else {
-    console.log("User needs to login to see the requested page\n");
-    res.json({
-      loggedIn: req.isAuthenticated(),
-      index: index,
-    });
-  };
-}); */
