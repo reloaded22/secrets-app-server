@@ -3,6 +3,10 @@ import { readSecrets, authenticateUser, registerUser, logOut, addSecret, updateS
 const router = express.Router();
 
 // ROUTES ////////////////////////////
+router.get("/", (req, res) => {
+  res.render("THIS IS A TEST");
+});
+
 router.get("/home", readSecrets); 
 
 router.post("/login", authenticateUser);
