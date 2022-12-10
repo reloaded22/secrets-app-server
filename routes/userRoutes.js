@@ -4,7 +4,7 @@ const router = express.Router();
 
 // ROUTES ////////////////////////////
 router.get("/", (req, res) => {
-  res.render("THIS IS A TEST");
+  res.send("THIS IS A TEST");
 });
 
 router.get("/home", readSecrets); 
