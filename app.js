@@ -30,8 +30,8 @@ app.use(passport.session());
 app.use("/api", userRoutes);
 
 // SERVER CONNECTION //
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, ()=>{
-    console.log(`Server running on port ${PORT} 🚀\n`);
+    console.log(`Server running on port ${PORT}\n`);
 });
