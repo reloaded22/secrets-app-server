@@ -1,9 +1,6 @@
-
 import passport from "passport";
 import url from "url";
-import User from "../models/User";
-
-
+import User from "../models/User.js";
 
 // FUNCTIONS //
 /////////////////////////////////////////////////////////////////////
