@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
 // Inject the passport-local-mongoose module to the schema //
 userSchema.plugin(passportLocalMongoose);
 // Create the model //
-const User = new mongoose.model("User", userSchema);
+const User = new mongoose.model("user", userSchema);
 // Use the passport module //
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());

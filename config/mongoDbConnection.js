@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+mongoose.set("strictQuery", false);
+
 // MongoDB Atlas Connection //
 const mongoDbConnection = () => {
   try {

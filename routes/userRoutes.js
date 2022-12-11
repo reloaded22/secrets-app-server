@@ -1,29 +1,43 @@
 import express from "express";
 import { readSecrets, authenticateUser, registerUser, logOut, addSecret, updateSecret, deleteSecret, adminUpdate, adminDelete } from "../controllers/userControllers.js";
-const router = express.Router();
+const userRouter = express.Router();
 
 // ROUTES ////////////////////////////
-router.get("/", (req, res) => {
+userRouter.get("/", (req, res) => {
   res.send("THIS IS A TEST");
 });
 
-router.get("/home", readSecrets); 
+userRouter.get("/home", readSecrets); 
 
-router.post("/login", authenticateUser);
+userRouter.post("/login", authenticateUser);
 
-router.post("/register", registerUser); 
+userRouter.get("/test-login", (req, res) => {
+  // res.writeHead(200, { "Content-Type": "text/html" }); !Only with res.end()
+  res.send(
+    `<div>
+    <p>Test Login<p>
+    <form action="/api/login" method="post">
+      <input type="text" name="username">
+      <input type="password" name="password">
+      <input type="submit">
+    </form>
+    </div>`
+    );
+});
 
-router.get("/logout", logOut); 
+userRouter.post("/register", registerUser); 
 
-router.post("/submit", addSecret); 
+userRouter.get("/logout", logOut); 
 
-router.get("/delete/:index", deleteSecret);
+userRouter.post("/submit", addSecret); 
 
-router.post("/submit-update", updateSecret);
+userRouter.get("/delete/:index", deleteSecret);
 
-router.get("/admin-delete/:index", adminDelete);
+userRouter.post("/submit-update", updateSecret);
 
-router.post("/admin-update", adminUpdate);
+userRouter.get("/admin-delete/:index", adminDelete);
+
+userRouter.post("/admin-update", adminUpdate);
 //////////////////////////////////////
 
-export { router };
+export default userRouter;

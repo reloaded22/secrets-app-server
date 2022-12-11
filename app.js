@@ -1,15 +1,15 @@
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import DbConnection from "./config/mongoDbConnection.js";
-import { router as userRoutes } from "./routes/userRoutes.js";
+import mongoDbConnection from "./config/mongoDbConnection.js";
+import userRouter from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 
 // Initialize dotenv //
 dotenv.config();
 
 // MongoDB Atlas Connection //
-DbConnection();
+mongoDbConnection();
 
 const app = express();
 app.use(express.json());
@@ -27,7 +27,7 @@ app.use(passport.session());
 //////////////////////////////////////
 
 // Use the routes //
-app.use("/api", userRoutes);
+app.use("/api", userRouter);
 
 // SERVER CONNECTION //
 const PORT = process.env.PORT || 3000;
