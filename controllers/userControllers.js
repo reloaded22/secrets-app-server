@@ -1,6 +1,9 @@
-import User from "../models/User.js";
+
 import passport from "passport";
 import url from "url";
+import User from "../models/User";
+
+
 
 // FUNCTIONS //
 /////////////////////////////////////////////////////////////////////
