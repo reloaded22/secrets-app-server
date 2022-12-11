@@ -29,7 +29,7 @@ app.use(passport.session());
 //////////////////////////////////////
 
 // Use the routes //
-app.use("/", userRouter);
+app.use("/api", userRouter);
 
 // SERVER CONNECTION //
 const PORT = process.env.PORT || 3000;
